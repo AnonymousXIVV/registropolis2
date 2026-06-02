@@ -8,7 +8,11 @@ interface DashboardContentWrapperProps {
 const DashboardContentWrapper: React.FC<DashboardContentWrapperProps> = ({
   initialSection = 'messages',
 }) => {
-  return <DashboardContent activeSection={initialSection} />;
+  return (
+    <div className="h-full">
+      <DashboardContent activeSection={initialSection} />
+    </div>
+  );
 };
 
 export default DashboardContentWrapper;

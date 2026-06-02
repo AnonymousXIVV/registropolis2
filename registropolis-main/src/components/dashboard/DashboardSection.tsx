@@ -1,8 +1,6 @@
-
 import React, { Suspense } from 'react';
 import DashboardLoadingSection from './DashboardLoadingSection';
 
-// Lazy load all sections
 const MessagesSection = React.lazy(() => import('../messages/MessagesSection'));
 const BusinessSection = React.lazy(() => import('../business/BusinessSection'));
 const JobsSection = React.lazy(() => import('../jobs/JobsSection'));
@@ -20,39 +18,28 @@ interface DashboardSectionProps {
 }
 
 const DashboardSection: React.FC<DashboardSectionProps> = ({ activeSection }) => {
+  const isFullHeight = activeSection === 'messages';
+
   const renderSection = () => {
     switch (activeSection) {
-      case 'messages':
-        return <MessagesSection />;
-      case 'business':
-        return <BusinessSection />;
-      case 'jobs':
-        return <JobsSection />;
-      case 'services':
-        return <ServicesSection />;
-      case 'marketplace':
-        return <MarketplaceSection />;
-      case 'real-estate':
-        return <RealEstateSection />;
-      case 'taxi':
-        return <TaxiSection />;
-      case 'transport':
-        return <TransportSection />;
-      case 'food':
-        return <FoodSection />;
-      case 'events':
-        return <EventsSection />;
-      case 'settings':
-        return <SettingsSection />;
-      default:
-        console.log('No matching section found, rendering MessagesSection');
-        return <MessagesSection />;
+      case 'messages':    return <MessagesSection />;
+      case 'business':    return <BusinessSection />;
+      case 'jobs':        return <JobsSection />;
+      case 'services':    return <ServicesSection />;
+      case 'marketplace': return <MarketplaceSection />;
+      case 'real-estate': return <RealEstateSection />;
+      case 'taxi':        return <TaxiSection />;
+      case 'transport':   return <TransportSection />;
+      case 'food':        return <FoodSection />;
+      case 'events':      return <EventsSection />;
+      case 'settings':    return <SettingsSection />;
+      default:            return <MessagesSection />;
     }
   };
 
   return (
     <Suspense fallback={<DashboardLoadingSection />}>
-      <div className="h-full overflow-auto pb-20">
+      <div className={isFullHeight ? 'h-full overflow-hidden' : 'h-full overflow-y-auto pb-20'}>
         {renderSection()}
       </div>
     </Suspense>
