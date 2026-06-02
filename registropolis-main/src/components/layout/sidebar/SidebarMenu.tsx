@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 import SidebarItem from './SidebarItem';
@@ -24,13 +23,10 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
   onItemClick,
 }) => {
   const location = useLocation();
-  const { isAdmin } = useAuth(); // Get admin status from auth context
+  const { isAdmin } = useAuth();
 
-  // Filter menu items based on admin status
-  const filteredMenuItems = menuItems.filter(item => {
-    if (item.adminOnly) {
-      return isAdmin; // Only show admin items to admins
-    }
+  const filteredMenuItems = menuItems.filter((item) => {
+    if (item.adminOnly) return isAdmin;
     return true;
   });
 
@@ -39,6 +35,11 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
       <div className="space-y-1">
         {filteredMenuItems.map((item) => {
           const IconComponent = item.icon;
+          const isActive =
+            item.href === '/'
+              ? location.pathname === '/'
+              : location.pathname === item.href ||
+                location.pathname.startsWith(item.href + '/');
           return (
             <SidebarItem
               key={item.title}
@@ -46,7 +47,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
               title={item.title}
               href={item.href}
               badge={item.badge}
-              isActive={location.pathname === item.href || location.pathname.startsWith(`${item.href}/`)}
+              isActive={isActive}
               isCollapsed={isCollapsed}
               onClick={onItemClick}
             />

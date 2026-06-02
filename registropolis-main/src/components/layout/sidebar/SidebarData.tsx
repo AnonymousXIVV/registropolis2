@@ -1,67 +1,67 @@
-
-import { Home, MessageCircle, ShoppingBag, Car, Briefcase, Wrench, Building, Truck, Calendar, Settings, Shield } from 'lucide-react';
+import {
+  MessageCircle,
+  ShoppingBag,
+  Car,
+  Briefcase,
+  Wrench,
+  Building,
+  Truck,
+  UtensilsCrossed,
+  Calendar,
+  Shield,
+} from 'lucide-react';
 
 export const mainMenuItems = [
   {
-    title: 'Home',
-    icon: Home,
-    href: '/',
-  },
-  {
     title: 'Messages',
     icon: MessageCircle,
-    href: '/messages',
+    href: '/dashboard/messages',
     badge: '5',
+  },
+  {
+    title: 'Food',
+    icon: UtensilsCrossed,
+    href: '/dashboard/food',
+  },
+  {
+    title: 'Taxi & Transport',
+    icon: Car,
+    href: '/dashboard/taxi',
   },
   {
     title: 'Marketplace',
     icon: ShoppingBag,
-    href: '/marketplace',
-  },
-  {
-    title: 'Taxi',
-    icon: Car,
-    href: '/taxi',
+    href: '/dashboard/marketplace',
   },
   {
     title: 'Jobs',
     icon: Briefcase,
-    href: '/jobs',
+    href: '/dashboard/jobs',
   },
   {
     title: 'Services',
     icon: Wrench,
-    href: '/services',
+    href: '/dashboard/services',
   },
   {
     title: 'Real Estate',
     icon: Building,
-    href: '/real-estate',
+    href: '/dashboard/real-estate',
   },
   {
     title: 'Transport',
     icon: Truck,
-    href: '/transport',
-  },
-  {
-    title: 'Food',
-    icon: ShoppingBag,
-    href: '/food',
+    href: '/dashboard/transport',
   },
   {
     title: 'Events',
     icon: Calendar,
-    href: '/events',
-  },
-  {
-    title: 'Settings',
-    icon: Settings,
-    href: '/settings',
+    href: '/dashboard/events',
   },
   {
     title: 'Admin',
-    icon: Shield, 
+    icon: Shield,
     href: '/admin',
-    adminOnly: true,  // This will be used to conditionally render this item
-  }
+    adminOnly: true,
+  },
 ];
