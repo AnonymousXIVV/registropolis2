@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React from 'react';
+import { useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import AnimatedTransition from '../common/AnimatedTransition';
 import { useSidebar } from '@/context/SidebarContext';
 import Sidebar from './Sidebar';
-import { useAuth } from '@/context/AuthContext';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useEffect } from 'react';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -14,7 +14,6 @@ interface AppLayoutProps {
   centered?: boolean;
   noAnimation?: boolean;
   withSidebar?: boolean;
-  requireAuth?: boolean;
 }
 
 const AppLayout: React.FC<AppLayoutProps> = ({
@@ -24,21 +23,11 @@ const AppLayout: React.FC<AppLayoutProps> = ({
   centered = false,
   noAnimation = false,
   withSidebar = true,
-  requireAuth = false,
 }) => {
   const location = useLocation();
-  const navigate = useNavigate();
   const { isCollapsed, contentMargin, sidebarTransitionClass, setSidebarCollapsed } = useSidebar();
-  const { isAuthenticated, isLoading } = useAuth();
   const isMobile = useIsMobile();
-
   const isHomepage = location.pathname === '/';
-
-  useEffect(() => {
-    if (requireAuth && !isLoading && !isAuthenticated) {
-      navigate('/auth', { state: { from: location.pathname } });
-    }
-  }, [requireAuth, isAuthenticated, isLoading, navigate, location.pathname]);
 
   useEffect(() => {
     if (isMobile && withSidebar) {
@@ -65,10 +54,10 @@ const AppLayout: React.FC<AppLayoutProps> = ({
           'flex-1 h-full overflow-hidden',
           'transition-all duration-300 ease-in-out',
           sidebarTransitionClass,
-          fullWidth ? '' : 'px-2 sm:px-4 lg:px-6',
-          !fullWidth && !isHomepage ? maxWidthClasses[maxWidth] : '',
+          isHomepage ? 'overflow-y-auto w-full max-w-full p-0' : '',
+          !isHomepage && !fullWidth ? 'px-2 sm:px-4 lg:px-6' : '',
+          !isHomepage && !fullWidth ? maxWidthClasses[maxWidth] : '',
           centered ? 'flex items-center justify-center' : '',
-          isHomepage ? 'w-full max-w-full p-0 overflow-y-auto' : '',
           'w-full',
         ]
           .filter(Boolean)

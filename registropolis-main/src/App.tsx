@@ -6,8 +6,6 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/context/AuthContext";
 import { SidebarProvider } from "@/context/SidebarContext";
 import Index from "./pages/Index";
-import Auth from "./pages/Auth";
-import Setup from "./pages/Setup";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
@@ -28,9 +26,8 @@ const queryClient = new QueryClient({
 
 const ThemeInitializer = () => {
   useEffect(() => {
-    const root = window.document.documentElement;
-    root.classList.remove('dark');
-    root.classList.add('light');
+    document.documentElement.classList.remove('dark');
+    document.documentElement.classList.add('light');
   }, []);
   return null;
 };
@@ -48,14 +45,13 @@ const App = () => (
               <AnimatePresence mode="wait">
                 <Routes>
                   <Route path="/" element={<Index />} />
-                  <Route path="/auth" element={<Auth />} />
-                  <Route path="/setup" element={<Setup />} />
-
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/dashboard/:section" element={<Dashboard />} />
-
                   <Route path="/admin" element={<Admin />} />
 
+                  {/* Legacy / removed routes — redirect to dashboard */}
+                  <Route path="/auth" element={<Navigate to="/dashboard" replace />} />
+                  <Route path="/setup" element={<Navigate to="/dashboard" replace />} />
                   <Route path="/messages" element={<Navigate to="/dashboard/messages" replace />} />
                   <Route path="/messages/:chatId" element={<Navigate to="/dashboard/messages" replace />} />
                   <Route path="/food" element={<Navigate to="/dashboard/food" replace />} />
