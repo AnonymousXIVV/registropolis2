@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
@@ -16,26 +15,14 @@ interface SidebarItemProps {
   onClick?: () => void;
 }
 
-const SidebarItem: React.FC<SidebarItemProps> = ({ 
-  icon, 
-  title, 
-  href, 
-  isCollapsed, 
-  isActive,
-  subItems,
-  badge,
-  isNew = false,
-  onClick
+const SidebarItem: React.FC<SidebarItemProps> = ({
+  icon, title, href, isCollapsed, isActive, subItems, badge, isNew = false, onClick,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const hasSubItems = subItems && subItems.length > 0;
   const location = useLocation();
 
   const handleClick = (e: React.MouseEvent) => {
-    if (isCollapsed && onClick) {
-      onClick();
-    }
-    
     if (hasSubItems) {
       e.preventDefault();
       setIsOpen(!isOpen);
@@ -45,67 +32,63 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
   };
 
   return (
-    <div className="w-full" data-testid={`sidebar-item-${title ? title.toLowerCase() : 'item'}`}>
-      <Link 
+    <div className="w-full" data-testid={`sidebar-item-${title?.toLowerCase() ?? 'item'}`}>
+      <Link
         to={href}
         className={cn(
-          "flex items-center gap-3 px-3 py-2 rounded-lg transition-colors w-full relative",
-          isActive 
-            ? "bg-sidebar-accent text-sidebar-accent-foreground" 
-            : "hover:bg-sidebar-accent/50 text-sidebar-foreground"
+          'group flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-sm font-medium transition-all duration-150 w-full relative select-none',
+          isActive
+            ? 'bg-primary/8 text-primary [&_svg]:text-primary'
+            : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800 [&_svg]:text-slate-400 hover:[&_svg]:text-slate-600'
         )}
+        style={isActive ? { backgroundColor: 'color-mix(in srgb, hsl(var(--primary)) 8%, transparent)' } : undefined}
         onClick={handleClick}
       >
-        <div className={cn(
-          "flex items-center justify-center w-8 h-8 relative",
-          isActive ? "text-primary" : "text-muted-foreground"
-        )}>
+        <div className={cn('relative flex-shrink-0', isCollapsed ? 'mx-auto' : '')}>
           {icon}
-          {badge && (
-            <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[0.65rem] text-destructive-foreground font-medium">
-              {parseInt(badge) > 99 ? '99+' : badge}
+          {badge && isCollapsed && (
+            <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-red-500 text-[9px] text-white font-bold">
+              {parseInt(badge) > 9 ? '9+' : badge}
             </span>
           )}
         </div>
+
         {!isCollapsed && (
           <>
-            <span className={cn(
-              "font-medium transition-opacity flex-1",
-              isActive ? "text-foreground" : "text-muted-foreground"
-            )}>
-              {title}
-              {isNew && (
-                <span className="ml-2 text-xs bg-primary text-primary-foreground px-1.5 py-0.5 rounded-full">
-                  New
-                </span>
-              )}
-            </span>
+            <span className="flex-1 truncate">{title}</span>
+            {isNew && (
+              <span className="text-[10px] font-semibold bg-primary text-white px-1.5 py-0.5 rounded-full leading-none">
+                New
+              </span>
+            )}
             {badge && (
-              <span className="bg-destructive/10 text-destructive text-xs px-1.5 py-0.5 rounded-full">
-                {badge}
+              <span className={cn(
+                'text-[11px] font-semibold px-1.5 py-0.5 rounded-full min-w-[20px] text-center leading-none',
+                isActive ? 'bg-primary text-white' : 'bg-red-500 text-white'
+              )}>
+                {parseInt(badge) > 99 ? '99+' : badge}
               </span>
             )}
             {hasSubItems && (
-              <ChevronRight className={cn(
-                "h-4 w-4 transition-transform",
-                isOpen && "transform rotate-90"
-              )} />
+              <ChevronRight
+                className={cn('h-3.5 w-3.5 text-slate-400 transition-transform duration-150', isOpen && 'rotate-90')}
+              />
             )}
           </>
         )}
       </Link>
-      
+
       {hasSubItems && isOpen && !isCollapsed && (
-        <div className="pl-10 space-y-1 mt-1">
-          {subItems.map((item, idx) => (
-            <Link 
+        <div className="pl-8 mt-0.5 space-y-0.5">
+          {subItems!.map((item, idx) => (
+            <Link
               key={idx}
               to={item.href}
               className={cn(
-                "block px-3 py-2 rounded-lg text-sm font-medium transition-colors",
-                location.pathname === item.href 
-                  ? "bg-sidebar-accent/70 text-foreground" 
-                  : "hover:bg-sidebar-accent/30 text-muted-foreground"
+                'block px-3 py-1.5 rounded-lg text-sm transition-colors',
+                location.pathname === item.href
+                  ? 'text-primary font-medium'
+                  : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
               )}
               onClick={onClick}
             >

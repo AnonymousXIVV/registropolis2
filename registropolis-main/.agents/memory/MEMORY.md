@@ -1,0 +1,2 @@
+- [Design System](design-system.md) — premium indigo/white design tokens; no glassmorphism; all section pages are self-contained with inline mock data
+- [Deleted Sections](deleted-sections.md) — Food and Taxi sections fully removed; their directories and page files are gone

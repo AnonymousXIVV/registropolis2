@@ -1,12 +1,10 @@
 import {
   MessageCircle,
   ShoppingBag,
-  Car,
   Briefcase,
   Wrench,
-  Building,
+  Building2,
   Truck,
-  UtensilsCrossed,
   Calendar,
   Shield,
 } from 'lucide-react';
@@ -17,16 +15,6 @@ export const mainMenuItems = [
     icon: MessageCircle,
     href: '/dashboard/messages',
     badge: '5',
-  },
-  {
-    title: 'Food',
-    icon: UtensilsCrossed,
-    href: '/dashboard/food',
-  },
-  {
-    title: 'Taxi & Transport',
-    icon: Car,
-    href: '/dashboard/taxi',
   },
   {
     title: 'Marketplace',
@@ -45,7 +33,7 @@ export const mainMenuItems = [
   },
   {
     title: 'Real Estate',
-    icon: Building,
+    icon: Building2,
     href: '/dashboard/real-estate',
   },
   {

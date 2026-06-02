@@ -1,338 +1,133 @@
-
 import React, { useState } from 'react';
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardFooter, 
-  CardHeader, 
-  CardTitle 
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/hooks/use-toast";
-import { useAuth } from '@/context/AuthContext';
-import ContactButton from '../common/ContactButton';
-import ServicePostingForm from './ServicePostingForm';
-import { 
-  Search, 
-  MapPin, 
-  Star, 
-  Filter, 
-  Phone, 
-  Mail, 
-  Globe,
-  ChevronRight,
-  Wrench,
-  Clock,
-  DollarSign,
-  CalendarClock,
-  ThumbsUp
-} from 'lucide-react';
+import { Search, Plus, Star, Clock, MessageCircle, MapPin, CheckCircle2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 
-// Sample services data - in a real app, this would come from an API
-const servicesData = [
-  {
-    id: "service-1",
-    title: "Professional Cleaning Services",
-    category: "Cleaning",
-    provider: "CleanPro Services",
-    rating: 4.8,
-    reviews: 156,
-    location: "City Center",
-    distance: "0.8 miles",
-    image: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=500",
-    description: "Professional home and office cleaning services. Regular cleaning, deep cleaning, and move-in/move-out services available.",
-    price: "$25-$40/hour",
-    availability: "Mon-Sat: 8AM-6PM",
-    experience: "15+ years",
-    contactId: "service-1",
-    contactName: "CleanPro Services",
-    phone: "+1 555-123-4567",
-    email: "info@cleanpro.com",
-    website: "cleanproservices.com",
-    followers: 245,
-    verified: true
-  },
-  {
-    id: "service-2",
-    title: "Electrical Installations & Repairs",
-    category: "Electrical",
-    provider: "Power Solutions",
-    rating: 4.9,
-    reviews: 203,
-    location: "North District",
-    distance: "1.2 miles",
-    image: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?q=80&w=500",
-    description: "Licensed electrician providing installations, repairs, and maintenance for residential and commercial properties.",
-    price: "$45-$75/hour",
-    availability: "Mon-Fri: 7AM-7PM, Sat: 8AM-5PM",
-    experience: "20+ years",
-    contactId: "service-2",
-    contactName: "Power Solutions",
-    phone: "+1 555-987-6543",
-    email: "service@powersolutions.com",
-    website: "powersolutions.com",
-    followers: 378,
-    verified: true
-  },
-  {
-    id: "service-3",
-    title: "Event Planning & Organization",
-    category: "Events",
-    provider: "Perfect Occasions",
-    rating: 4.7,
-    reviews: 118,
-    location: "Downtown",
-    distance: "0.5 miles",
-    image: "https://images.unsplash.com/photo-1478146059778-26028b07395a?q=80&w=500",
-    description: "Full-service event planning for weddings, corporate events, and private parties. Decoration, catering, and venue coordination.",
-    price: "Starting at $500",
-    availability: "By appointment",
-    experience: "8+ years",
-    contactId: "service-3",
-    contactName: "Perfect Occasions",
-    phone: "+1 555-234-5678",
-    email: "events@perfectoccasions.com",
-    website: "perfectoccasions.com",
-    followers: 512,
-    verified: true
-  },
-  {
-    id: "service-4",
-    title: "Plumbing Services",
-    category: "Plumbing",
-    provider: "Quick Fix Plumbers",
-    rating: 4.6,
-    reviews: 92,
-    location: "East Side",
-    distance: "1.7 miles",
-    image: "https://images.unsplash.com/photo-1574105760089-526d4a69edbc?q=80&w=500",
-    description: "Emergency and regular plumbing services. Repairs, installations, and maintenance for all types of plumbing systems.",
-    price: "$40-$65/hour",
-    availability: "24/7 Emergency Service",
-    experience: "12+ years",
-    contactId: "service-4",
-    contactName: "Quick Fix Plumbers",
-    phone: "+1 555-876-5432",
-    email: "help@quickfixplumbers.com",
-    website: "quickfixplumbers.com",
-    followers: 189,
-    verified: true
-  },
-  {
-    id: "service-5",
-    title: "Landscaping & Garden Design",
-    category: "Landscaping",
-    provider: "Green Thumb Gardens",
-    rating: 4.9,
-    reviews: 176,
-    location: "West District",
-    distance: "2.3 miles",
-    image: "https://images.unsplash.com/photo-1590856029826-c7a73142bbf1?q=80&w=500",
-    description: "Professional landscaping services including design, maintenance, planting, and hardscaping for residential and commercial properties.",
-    price: "Custom quotes available",
-    availability: "Mon-Fri: 8AM-6PM",
-    experience: "18+ years",
-    contactId: "service-5",
-    contactName: "Green Thumb Gardens",
-    phone: "+1 555-345-6789",
-    email: "info@greenthumbgardens.com",
-    website: "greenthumbgardens.com",
-    followers: 426,
-    verified: true
-  }
+const CATEGORIES = ['All', 'Home Repair', 'Cleaning', 'Design', 'Tutoring', 'Health', 'Tech Support'];
+
+const SERVICES = [
+  { id:'1', name:'Marcus Johnson', title:'Licensed Plumber & Handyman', category:'Home Repair', rating:4.9, reviews:127, rate:'$75/hr', location:'San Francisco, CA', available:true, jobs:340, verified:true, tags:['Plumbing','Electrical','Fixtures'], image:'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=800&q=80' },
+  { id:'2', name:'Sophia Chen', title:'Premium Interior Cleaning', category:'Cleaning', rating:5.0, reviews:89, rate:'$120/visit', location:'New York, NY', available:true, jobs:210, verified:true, tags:['Deep Clean','Move-in/out','Office'], image:'https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?auto=format&fit=crop&w=800&q=80' },
+  { id:'3', name:'David Park', title:'Brand & Product Designer', category:'Design', rating:4.8, reviews:64, rate:'$95/hr', location:'Remote', available:true, jobs:180, verified:true, tags:['Branding','UI/UX','Figma'], image:'https://images.unsplash.com/photo-1531746790731-6c087fecd65a?auto=format&fit=crop&w=800&q=80' },
+  { id:'4', name:'Elena Rossi', title:'Private Chef & Catering', category:'Health', rating:4.9, reviews:55, rate:'$200/event', location:'Los Angeles, CA', available:false, jobs:95, verified:true, tags:['Italian','Catering','Meal Prep'], image:'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=800&q=80' },
+  { id:'5', name:'Jordan Williams', title:'Certified Personal Trainer', category:'Health', rating:4.7, reviews:203, rate:'$80/session', location:'Chicago, IL', available:true, jobs:500, verified:false, tags:['Strength','HIIT','Nutrition'], image:'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=800&q=80' },
+  { id:'6', name:'Aria Patel', title:'Mathematics & SAT Tutor', category:'Tutoring', rating:5.0, reviews:148, rate:'$60/hr', location:'Boston, MA', available:true, jobs:290, verified:true, tags:['Calculus','SAT Prep','AP Math'], image:'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80' },
+  { id:'7', name:'Ryan Thompson', title:'MacBook & PC Specialist', category:'Tech Support', rating:4.6, reviews:77, rate:'$70/hr', location:'Remote', available:true, jobs:160, verified:false, tags:['macOS','Windows','Networking'], image:'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=800&q=80' },
+  { id:'8', name:'Amara Osei', title:'Residential Electrician', category:'Home Repair', rating:4.9, reviews:112, rate:'$90/hr', location:'Seattle, WA', available:true, jobs:275, verified:true, tags:['Wiring','Panel Upgrades','EV Chargers'], image:'https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?auto=format&fit=crop&w=800&q=80' },
 ];
 
-const categories = [
-  "All Categories",
-  "Cleaning",
-  "Electrical",
-  "Plumbing",
-  "Landscaping",
-  "Carpentry",
-  "Painting",
-  "Events",
-  "Tutoring",
-  "IT Support",
-  "Moving"
-];
+export default function ServicesSection() {
+  const [activeCat, setActiveCat] = useState('All');
+  const [search, setSearch] = useState('');
 
-const ServicesSection: React.FC = () => {
-  const { toast } = useToast();
-  const { user } = useAuth();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All Categories');
-  const [showPostingForm, setShowPostingForm] = useState(false);
-
-  // Filter services based on search query and selected category
-  const filteredServices = servicesData.filter(service => {
-    const matchesQuery = service.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                       service.description.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    const matchesCategory = selectedCategory === 'All Categories' || service.category === selectedCategory;
-    
-    return matchesQuery && matchesCategory;
-  });
+  const filtered = SERVICES.filter(s =>
+    (activeCat === 'All' || s.category === activeCat) &&
+    (s.name.toLowerCase().includes(search.toLowerCase()) || s.title.toLowerCase().includes(search.toLowerCase()))
+  );
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Services</h1>
-        <Button className="flex gap-2" onClick={() => setShowPostingForm(true)}>
-          <Wrench className="h-4 w-4" />
-          Post a Service
+    <div className="section-padding space-y-6">
+      {/* Header */}
+      <div className="section-header">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Services</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">Find trusted professionals in your community</p>
+        </div>
+        <Button className="gap-2 rounded-xl shadow-sm">
+          <Plus className="h-4 w-4" />Offer a Service
         </Button>
       </div>
-      
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search services..."
-            className="pl-10"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-        <div className="flex flex-row gap-2">
-          <select 
-            className="bg-background border border-input rounded-md px-3 py-2"
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-          >
-            {categories.map(category => (
-              <option key={category} value={category}>{category}</option>
-            ))}
-          </select>
-          <Button variant="outline" size="icon">
-            <Filter className="h-4 w-4" />
-          </Button>
-        </div>
+
+      {/* Search */}
+      <div className="relative max-w-lg">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+        <Input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search services or providers…" className="pl-9 rounded-xl border-slate-200 bg-white h-10" />
       </div>
-      
-      <Tabs defaultValue="list" className="w-full">
-        <TabsList>
-          <TabsTrigger value="list">List View</TabsTrigger>
-          <TabsTrigger value="map">Map View</TabsTrigger>
-        </TabsList>
-        <TabsContent value="list" className="space-y-4">
-          {filteredServices.length > 0 ? (
-            filteredServices.map(service => (
-              <Card key={service.id} className="overflow-hidden">
-                <div className="flex flex-col md:flex-row">
-                  <div className="md:w-1/4 h-48 md:h-auto">
-                    <img 
-                      src={service.image} 
-                      alt={service.title} 
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="md:w-3/4 flex flex-col">
-                    <CardHeader>
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <CardTitle className="flex items-center gap-2">
-                            {service.title}
-                            {service.verified && (
-                              <Badge variant="secondary" className="ml-2">Verified</Badge>
-                            )}
-                          </CardTitle>
-                          <CardDescription className="mt-1">
-                            Provider: {service.provider} 
-                            <span className="ml-2 text-xs text-muted-foreground">({service.followers} followers)</span>
-                          </CardDescription>
-                          <div className="flex items-center gap-2 mt-1">
-                            <span className="bg-secondary text-secondary-foreground text-xs px-2 py-1 rounded-full">
-                              {service.category}
-                            </span>
-                            <span className="flex items-center">
-                              <Star className="h-4 w-4 text-yellow-500 mr-1" /> 
-                              {service.rating} ({service.reviews} reviews)
-                            </span>
-                          </div>
-                        </div>
-                        <div className="text-sm text-muted-foreground flex items-center">
-                          <MapPin className="h-4 w-4 mr-1" />
-                          {service.distance}
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground">{service.description}</p>
-                      <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-sm">
-                        <div className="flex items-center">
-                          <DollarSign className="h-4 w-4 mr-2 text-muted-foreground" />
-                          {service.price}
-                        </div>
-                        <div className="flex items-center">
-                          <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
-                          {service.availability}
-                        </div>
-                        <div className="flex items-center">
-                          <CalendarClock className="h-4 w-4 mr-2 text-muted-foreground" />
-                          Experience: {service.experience}
-                        </div>
-                        <div className="flex items-center">
-                          <ThumbsUp className="h-4 w-4 mr-2 text-muted-foreground" />
-                          {service.reviews} Reviews
-                        </div>
-                      </div>
-                    </CardContent>
-                    <CardFooter className="flex justify-between border-t pt-4">
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm" className="flex items-center gap-1">
-                          <Phone className="h-3 w-3" />
-                          Call
-                        </Button>
-                        <Button variant="outline" size="sm" className="flex items-center gap-1">
-                          <Mail className="h-3 w-3" />
-                          Email
-                        </Button>
-                      </div>
-                      <div className="flex gap-2">
-                        <ContactButton 
-                          contactId={service.contactId}
-                          contactName={service.contactName}
-                          size="sm"
-                        />
-                        <Button size="sm" className="flex items-center gap-1">
-                          View Details <ChevronRight className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </CardFooter>
+
+      {/* Categories */}
+      <div className="flex gap-2 flex-wrap">
+        {CATEGORIES.map(cat => (
+          <button key={cat} onClick={()=>setActiveCat(cat)} className={cn('chip text-sm', activeCat===cat ? 'chip-active' : 'chip-default')}>
+            {cat}
+          </button>
+        ))}
+      </div>
+
+      <p className="text-xs text-muted-foreground">{filtered.length} providers available</p>
+
+      {/* Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        {filtered.map(svc => (
+          <div key={svc.id} className="card-premium group cursor-pointer overflow-hidden">
+            {/* Photo */}
+            <div className="relative aspect-[4/3] overflow-hidden bg-slate-100">
+              <img src={svc.image} alt={svc.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              {/* Availability */}
+              <div className="absolute top-2.5 left-2.5">
+                <span className={cn('text-[11px] font-semibold px-2 py-0.5 rounded-full', svc.available ? 'bg-green-500 text-white' : 'bg-slate-600 text-white')}>
+                  {svc.available ? 'Available' : 'Busy'}
+                </span>
+              </div>
+              {svc.verified && (
+                <div className="absolute bottom-2.5 left-2.5 flex items-center gap-1 bg-white/95 text-[11px] font-semibold text-slate-700 px-2 py-0.5 rounded-full shadow-sm">
+                  <CheckCircle2 className="h-3 w-3 text-blue-500" />Verified Pro
+                </div>
+              )}
+            </div>
+
+            {/* Body */}
+            <div className="p-4 space-y-3">
+              <div>
+                <div className="flex items-center justify-between gap-2">
+                  <h3 className="font-semibold text-slate-900 text-sm">{svc.name}</h3>
+                  <div className="flex items-center gap-0.5">
+                    <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                    <span className="text-sm font-semibold text-slate-700">{svc.rating}</span>
+                    <span className="text-xs text-slate-400 ml-0.5">({svc.reviews})</span>
                   </div>
                 </div>
-              </Card>
-            ))
-          ) : (
-            <div className="text-center py-10">
-              <p className="text-lg text-muted-foreground">No services found matching your search criteria.</p>
+                <p className="text-xs text-slate-500 mt-0.5">{svc.title}</p>
+              </div>
+
+              {/* Tags */}
+              <div className="flex flex-wrap gap-1">
+                {svc.tags.map(t => (
+                  <span key={t} className="text-[10px] font-medium bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md">{t}</span>
+                ))}
+              </div>
+
+              {/* Meta */}
+              <div className="space-y-1">
+                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <MapPin className="h-3 w-3 flex-shrink-0" /><span className="truncate">{svc.location}</span>
+                </div>
+                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <Clock className="h-3 w-3 flex-shrink-0" /><span>{svc.jobs}+ jobs completed</span>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+                <span className="text-base font-bold text-slate-900">{svc.rate}</span>
+                <Button size="sm" className="rounded-lg gap-1.5 h-8 text-xs">
+                  <MessageCircle className="h-3.5 w-3.5" />Book Now
+                </Button>
+              </div>
             </div>
-          )}
-        </TabsContent>
-        <TabsContent value="map">
-          <Card className="h-[600px] flex items-center justify-center">
-            <CardContent className="text-center p-8">
-              <MapPin className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <p className="text-xl font-medium mb-2">Map View</p>
-              <p className="text-muted-foreground">Map integration will show services on an interactive map here.</p>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-      
-      {showPostingForm && (
-        <ServicePostingForm 
-          isOpen={showPostingForm} 
-          onClose={() => setShowPostingForm(false)} 
-        />
+          </div>
+        ))}
+      </div>
+
+      {filtered.length === 0 && (
+        <div className="text-center py-20">
+          <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto mb-4">
+            <Search className="h-8 w-8 text-slate-300" />
+          </div>
+          <h3 className="font-semibold text-slate-700">No providers found</h3>
+          <p className="text-sm text-muted-foreground mt-1">Try a different category or search</p>
+        </div>
       )}
     </div>
   );
-};
-
-export default ServicesSection;
+}

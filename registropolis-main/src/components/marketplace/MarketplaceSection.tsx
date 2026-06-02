@@ -1,313 +1,143 @@
 import React, { useState } from 'react';
-import { 
-  Card, 
-  CardContent, 
-  CardFooter, 
-  CardHeader, 
-  CardTitle 
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { 
-  Search, 
-  MapPin, 
-  Heart, 
-  Share2, 
-  MessageCircle,
-  Filter,
-  Grid,
-  List,
-  ChevronDown
-} from 'lucide-react';
-import { Badge } from "@/components/ui/badge";
-import { 
-  Tabs, 
-  TabsContent, 
-  TabsList, 
-  TabsTrigger 
-} from "@/components/ui/tabs";
-import ContactButton from '../common/ContactButton';
+import { Search, Plus, Heart, MessageCircle, MapPin, CheckCircle2, Star } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 
-const productsData = [
-  {
-    id: 1,
-    title: "iPhone 13 Pro - Perfect Condition",
-    price: "$699",
-    category: "Electronics",
-    location: "Brooklyn, NY",
-    distance: "1.2 miles",
-    posted: "2 days ago",
-    images: ["https://images.unsplash.com/photo-1603921326210-6edd2d60ca68?q=80&w=500&auto=format&fit=crop"],
-    description: "Selling my iPhone 13 Pro in perfect condition. 256GB, Pacific Blue. Includes original box, charger, and case.",
-    seller: {
-      name: "Alex Johnson",
-      rating: "4.9",
-      joined: "March 2019",
-      otherListings: 8
-    }
-  },
-  {
-    id: 2,
-    title: "Modern Coffee Table - Solid Wood",
-    price: "$250",
-    category: "Furniture",
-    location: "Manhattan, NY",
-    distance: "2.5 miles",
-    posted: "1 week ago",
-    images: ["https://images.unsplash.com/photo-1634712282287-14ed57b9cc14?q=80&w=500&auto=format&fit=crop"],
-    description: "Beautiful modern coffee table made of solid walnut wood. Dimensions: 48\" L x 24\" W x 18\" H. Minor scratches on one leg.",
-    seller: {
-      name: "Sarah Miller",
-      rating: "4.7",
-      joined: "November 2020",
-      otherListings: 12
-    }
-  },
-  {
-    id: 3,
-    title: "Mountain Bike - Trek X-Caliber 8",
-    price: "$850",
-    category: "Sports & Outdoors",
-    location: "Queens, NY",
-    distance: "3.7 miles",
-    posted: "3 days ago",
-    images: ["https://images.unsplash.com/photo-1576435728678-68d0fbf94e91?q=80&w=500&auto=format&fit=crop"],
-    description: "Trek X-Caliber 8 mountain bike in great condition. Size M/L (17.5\"). Upgraded brakes and tires. Perfect for trails or commuting.",
-    seller: {
-      name: "David Chen",
-      rating: "4.8",
-      joined: "May 2018",
-      otherListings: 5
-    }
-  },
-  {
-    id: 4,
-    title: "Designer Handbag - Louis Vuitton",
-    price: "$1,200",
-    category: "Clothing & Accessories",
-    location: "Manhattan, NY",
-    distance: "1.8 miles",
-    posted: "1 day ago",
-    images: ["https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=500&auto=format&fit=crop"],
-    description: "Authentic Louis Vuitton Neverfull MM in excellent condition. Includes dust bag and receipt. Only used a few times.",
-    seller: {
-      name: "Emma Wilson",
-      rating: "5.0",
-      joined: "January 2021",
-      otherListings: 3
-    }
-  },
-  {
-    id: 5,
-    title: "Sony PlayStation 5 - Disc Edition",
-    price: "$480",
-    category: "Electronics",
-    location: "Bronx, NY",
-    distance: "5.2 miles",
-    posted: "5 days ago",
-    images: ["https://images.unsplash.com/photo-1606813907291-d86efa9b94db?q=80&w=500&auto=format&fit=crop"],
-    description: "PlayStation 5 disc edition in perfect working order. Includes 2 controllers, charging dock, and 3 games.",
-    seller: {
-      name: "Michael Brown",
-      rating: "4.6",
-      joined: "August 2020",
-      otherListings: 7
-    }
-  },
-  {
-    id: 6,
-    title: "Vintage Vinyl Record Collection",
-    price: "$350",
-    category: "Music & Instruments",
-    location: "Brooklyn, NY",
-    distance: "2.1 miles",
-    posted: "1 week ago",
-    images: ["https://images.unsplash.com/photo-1603048588665-791ca8aea617?q=80&w=500&auto=format&fit=crop"],
-    description: "Collection of 50+ classic rock and jazz vinyl records from the 60s and 70s. All in good to excellent condition. List of titles available.",
-    seller: {
-      name: "James Wilson",
-      rating: "4.9",
-      joined: "July 2017",
-      otherListings: 15
-    }
-  }
+const CATEGORIES = ['All', 'Electronics', 'Clothing', 'Home & Living', 'Sports', 'Vehicles', 'Books'];
+
+const PRODUCTS = [
+  { id:'1', title:'MacBook Pro 14"', price:1850, originalPrice:2499, condition:'Like New', location:'San Francisco, CA', seller:'Alex K.', sellerRating:4.9, verified:true, category:'Electronics', saved:false, timeAgo:'2h ago', image:'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=800&q=80' },
+  { id:'2', title:'Sony WH-1000XM5 Headphones', price:220, originalPrice:380, condition:'Good', location:'Austin, TX', seller:'Maria S.', sellerRating:4.7, verified:true, category:'Electronics', saved:true, timeAgo:'5h ago', image:'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80' },
+  { id:'3', title:'Nike Air Jordan 1 Retro', price:340, originalPrice:180, condition:'New', location:'New York, NY', seller:'James R.', sellerRating:5.0, verified:true, category:'Clothing', saved:false, timeAgo:'1d ago', image:'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80' },
+  { id:'4', title:'Canon EOS R6 Camera', price:1600, originalPrice:2200, condition:'Good', location:'Seattle, WA', seller:'Priya M.', sellerRating:4.8, verified:false, category:'Electronics', saved:false, timeAgo:'3d ago', image:'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=800&q=80' },
+  { id:'5', title:'Vintage Leather Watch', price:480, originalPrice:780, condition:'Like New', location:'Chicago, IL', seller:'Tom B.', sellerRating:4.6, verified:true, category:'Clothing', saved:true, timeAgo:'1d ago', image:'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80' },
+  { id:'6', title:'Velvet Accent Sofa', price:890, originalPrice:1400, condition:'Good', location:'Miami, FL', seller:'Clara N.', sellerRating:4.9, verified:true, category:'Home & Living', saved:false, timeAgo:'2d ago', image:'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=800&q=80' },
+  { id:'7', title:'Trek Carbon Road Bike', price:1200, originalPrice:2100, condition:'Good', location:'Portland, OR', seller:'Dan W.', sellerRating:4.8, verified:false, category:'Sports', saved:false, timeAgo:'4d ago', image:'https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=800&q=80' },
+  { id:'8', title:'Designer Leather Handbag', price:420, originalPrice:950, condition:'Like New', location:'Los Angeles, CA', seller:'Sophie T.', sellerRating:4.7, verified:true, category:'Clothing', saved:true, timeAgo:'6h ago', image:'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=800&q=80' },
 ];
 
-const categories = [
-  "All Categories",
-  "Electronics",
-  "Furniture",
-  "Clothing & Accessories",
-  "Sports & Outdoors",
-  "Music & Instruments",
-  "Vehicles",
-  "Real Estate",
-  "Services"
-];
+const COND_CLR: Record<string,string> = { 'New':'bg-emerald-50 text-emerald-700 border-emerald-100', 'Like New':'bg-blue-50 text-blue-700 border-blue-100', 'Good':'bg-amber-50 text-amber-700 border-amber-100', 'Fair':'bg-orange-50 text-orange-700 border-orange-100' };
 
-const MarketplaceSection: React.FC = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All Categories');
-  const [viewMode, setViewMode] = useState('grid');
-  
-  const filteredProducts = productsData.filter(product => {
-    const matchesQuery = product.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                         product.description.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    const matchesCategory = selectedCategory === 'All Categories' || product.category === selectedCategory;
-    
-    return matchesQuery && matchesCategory;
-  });
+export default function MarketplaceSection() {
+  const [activeCat, setActiveCat] = useState('All');
+  const [search, setSearch] = useState('');
+  const [savedMap, setSavedMap] = useState<Record<string,boolean>>(Object.fromEntries(PRODUCTS.map(p=>[p.id,p.saved])));
+
+  const filtered = PRODUCTS.filter(p =>
+    (activeCat === 'All' || p.category === activeCat) &&
+    p.title.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
-      <h1 className="text-3xl font-bold">Marketplace</h1>
-      
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search products..."
-            className="pl-10"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+    <div className="section-padding space-y-6">
+      {/* Header */}
+      <div className="section-header">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Marketplace</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">Discover amazing deals from your community</p>
         </div>
-        <div className="flex flex-row gap-2 flex-shrink-0">
-          <select 
-            className="bg-background border border-input rounded-md px-3 py-2"
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-          >
-            {categories.map(category => (
-              <option key={category} value={category}>{category}</option>
-            ))}
-          </select>
-          <Button variant="outline" size="icon" className="hidden md:flex">
-            <Filter className="h-4 w-4" />
-          </Button>
-          <div className="hidden md:flex border border-input rounded-md overflow-hidden">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className={`rounded-none ${viewMode === 'grid' ? 'bg-accent' : ''}`}
-              onClick={() => setViewMode('grid')}
-            >
-              <Grid className="h-4 w-4" />
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className={`rounded-none ${viewMode === 'list' ? 'bg-accent' : ''}`}
-              onClick={() => setViewMode('list')}
-            >
-              <List className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
+        <Button className="gap-2 rounded-xl shadow-sm">
+          <Plus className="h-4 w-4" />List an Item
+        </Button>
       </div>
-      
-      <Tabs defaultValue="browse" className="w-full">
-        <TabsList>
-          <TabsTrigger value="browse">Browse</TabsTrigger>
-          <TabsTrigger value="my-listings">My Listings</TabsTrigger>
-          <TabsTrigger value="saved">Saved Items</TabsTrigger>
-        </TabsList>
-        <TabsContent value="browse">
-          {filteredProducts.length > 0 ? (
-            <div className={`grid ${viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'} gap-4`}>
-              {filteredProducts.map(product => (
-                <Card key={product.id} className="overflow-hidden h-full flex flex-col">
-                  <div 
-                    className={`relative ${viewMode === 'grid' ? 'aspect-square' : 'aspect-video md:h-48'}`}
-                  >
-                    <img 
-                      src={product.images[0]} 
-                      alt={product.title} 
-                      className="w-full h-full object-cover"
-                    />
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="absolute top-2 right-2 bg-white/80 hover:bg-white/90 rounded-full h-8 w-8"
-                    >
-                      <Heart className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <div className="flex flex-col flex-1">
-                    <CardHeader className="pb-2">
-                      <div className="flex justify-between items-start">
-                        <CardTitle className={`${viewMode === 'grid' ? 'text-base' : 'text-xl'}`}>{product.title}</CardTitle>
-                        <span className="font-bold text-lg">{product.price}</span>
-                      </div>
-                      <div className="flex items-center text-sm text-muted-foreground mt-1 space-x-2">
-                        <Badge variant="secondary" className="font-normal">
-                          {product.category}
-                        </Badge>
-                        <span className="flex items-center">
-                          <MapPin className="h-3.5 w-3.5 mr-1" /> 
-                          {product.distance}
-                        </span>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="pb-2 flex-1">
-                      {viewMode === 'list' && (
-                        <p className="text-sm text-muted-foreground mb-2">{product.description}</p>
-                      )}
-                      <div className="flex justify-between text-xs text-muted-foreground">
-                        <span>Posted {product.posted}</span>
-                        <span>Seller: {product.seller.name} ({product.seller.rating}★)</span>
-                      </div>
-                    </CardContent>
-                    <CardFooter className="flex justify-between pt-2 border-t">
-                      <Button variant="outline" size="sm" className="flex items-center gap-1">
-                        <Share2 className="h-4 w-4" />
-                        Share
-                      </Button>
-                      <ContactButton 
-                        contactId={`marketplace-${product.id}`} 
-                        contactName={product.seller.name} 
-                        size="sm"
-                        productInfo={{
-                          id: product.id,
-                          title: product.title,
-                          price: product.price,
-                          image: product.images[0]
-                        }}
-                      />
-                    </CardFooter>
-                  </div>
-                </Card>
-              ))}
+
+      {/* Search */}
+      <div className="relative max-w-lg">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+        <Input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search marketplace…" className="pl-9 rounded-xl border-slate-200 bg-white h-10" />
+      </div>
+
+      {/* Categories */}
+      <div className="flex gap-2 flex-wrap">
+        {CATEGORIES.map(cat => (
+          <button key={cat} onClick={()=>setActiveCat(cat)} className={cn('chip text-sm', activeCat===cat ? 'chip-active' : 'chip-default')}>
+            {cat}
+          </button>
+        ))}
+      </div>
+
+      <p className="text-xs text-muted-foreground">{filtered.length} items found</p>
+
+      {/* Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        {filtered.map(p => (
+          <div key={p.id} className="card-premium group cursor-pointer overflow-hidden">
+            {/* Image */}
+            <div className="relative aspect-[4/3] overflow-hidden bg-slate-100">
+              <img src={p.image} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              {p.originalPrice > p.price && (
+                <div className="absolute top-2.5 left-2.5">
+                  <span className="bg-red-500 text-white text-[11px] font-bold px-2 py-0.5 rounded-full shadow-sm">
+                    -{Math.round((1 - p.price / p.originalPrice) * 100)}%
+                  </span>
+                </div>
+              )}
+              <button
+                onClick={e=>{e.stopPropagation(); setSavedMap(s=>({...s,[p.id]:!s[p.id]}));}}
+                className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-white/95 flex items-center justify-center shadow-sm hover:bg-white transition-colors"
+              >
+                <Heart className={cn('h-4 w-4 transition-colors', savedMap[p.id] ? 'fill-red-500 text-red-500' : 'text-slate-400')} />
+              </button>
+              {p.verified && (
+                <div className="absolute bottom-2.5 left-2.5 flex items-center gap-1 bg-white/95 text-[11px] font-semibold text-slate-700 px-2 py-0.5 rounded-full shadow-sm">
+                  <CheckCircle2 className="h-3 w-3 text-blue-500" />Verified
+                </div>
+              )}
             </div>
-          ) : (
-            <div className="text-center py-10">
-              <p className="text-lg text-muted-foreground">No items found matching your search criteria.</p>
+
+            {/* Body */}
+            <div className="p-4 space-y-3">
+              <div>
+                <div className="flex items-start justify-between gap-2">
+                  <h3 className="font-semibold text-sm leading-tight text-slate-900 line-clamp-2 flex-1">{p.title}</h3>
+                  <span className={cn('text-[10px] font-semibold px-2 py-0.5 rounded-md border flex-shrink-0', COND_CLR[p.condition]??'bg-slate-100 text-slate-600 border-slate-200')}>
+                    {p.condition}
+                  </span>
+                </div>
+                <div className="flex items-baseline gap-2 mt-1.5">
+                  <span className="text-[17px] font-bold text-slate-900">${p.price.toLocaleString()}</span>
+                  {p.originalPrice > p.price && <span className="text-sm text-slate-400 line-through">${p.originalPrice.toLocaleString()}</span>}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                <MapPin className="h-3 w-3 flex-shrink-0" />
+                <span className="truncate">{p.location}</span>
+                <span className="ml-auto flex-shrink-0 font-medium">{p.timeAgo}</span>
+              </div>
+
+              <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-400 to-violet-500 flex items-center justify-center text-[11px] text-white font-bold flex-shrink-0">
+                    {p.seller[0]}
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-slate-800 leading-none">{p.seller}</p>
+                    <div className="flex items-center gap-0.5 mt-0.5">
+                      <Star className="h-2.5 w-2.5 fill-amber-400 text-amber-400" />
+                      <span className="text-[10px] text-slate-500">{p.sellerRating}</span>
+                    </div>
+                  </div>
+                </div>
+                <Button size="sm" variant="outline" className="h-7 text-xs gap-1 rounded-lg border-slate-200">
+                  <MessageCircle className="h-3 w-3" />Chat
+                </Button>
+              </div>
             </div>
-          )}
-        </TabsContent>
-        <TabsContent value="my-listings">
-          <Card className="h-[300px] flex items-center justify-center">
-            <CardContent className="text-center p-8">
-              <p className="text-xl font-medium mb-2">You don't have any listings yet</p>
-              <p className="text-muted-foreground mb-4">Create your first listing to start selling.</p>
-              <Button>Create Listing</Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="saved">
-          <Card className="h-[300px] flex items-center justify-center">
-            <CardContent className="text-center p-8">
-              <Heart className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <p className="text-xl font-medium mb-2">No Saved Items</p>
-              <p className="text-muted-foreground mb-4">Items you save will appear here for easy access.</p>
-              <Button>Browse Marketplace</Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+          </div>
+        ))}
+      </div>
+
+      {filtered.length === 0 && (
+        <div className="text-center py-20">
+          <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto mb-4">
+            <Search className="h-8 w-8 text-slate-300" />
+          </div>
+          <h3 className="font-semibold text-slate-700">No results found</h3>
+          <p className="text-sm text-muted-foreground mt-1">Try a different search or category</p>
+        </div>
+      )}
     </div>
   );
-};
-
-export default MarketplaceSection;
+}
